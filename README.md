@@ -32,9 +32,9 @@ OpsGuide transforms your static documentation into **dynamic, contextual inciden
 - **LLM Reasoning**: Contextual analysis with retrieved documentation
 - **Output**: Ranked hypotheses + citation-backed safe next actions
 
-**Example**: *"Lab person unable to sign out order (400 Bad Request)"*
-→ **RAG retrieves**: Data divergence reconciliation runbook v3, downstream API specs
-→ **LLM generates**: "Data divergence detected. Execute reconciliation via `/v2/orders/{id}/reconcile` API per runbook v3"
+**Example**: *"System unable to ship an order (400 Bad Request)"*
+→ **RAG retrieves**: Shipping reconciliation runbook v3, downstream API specs
+→ **LLM generates**: "Shipping validation failed. Execute reconciliation via `/v2/orders/{id}/reconcile` API per runbook v3"
 
 ### **2. 🔧 Operational Ask → Safe Procedures**
 **Convert natural language requests into API-first procedures**
@@ -54,9 +54,9 @@ OpsGuide transforms your static documentation into **dynamic, contextual inciden
 - **LLM Reasoning**: Synthesize multi-source documentation into coherent explanations
 - **Output**: Comprehensive workflow explanations with source citations
 
-**Example**: *"How does pathologist signout flow work?"*
+**Example**: *"How does Payments and Charges work?"*
 → **RAG retrieves**: Design docs, API specs, workflow diagrams, code comments
-→ **LLM generates**: Complete workflow explanation with step-by-step process and system interactions
+→ **LLM generates**: Complete payment workflow explanation with step-by-step process and system interactions
 
 ## 🏗️ **RAG Technology Stack**
 
@@ -308,17 +308,38 @@ curl -X POST http://localhost:8093/v1/request \
 ### Expected Response Format
 ```json
 {
-  "task_id": "CANCEL_ORDER",
-  "confidence": 0.9,
-  "order_id": "2024",
-  "service": "Order",
+  "request_id": "84cad564-29b6-4e34-a6e5-313e525eb56d",
+  "status": "processed",
+  "timestamp": "2025-08-29T15:22:54.182432Z",
+  "input": {
+    "query": "cancel order ORDER-2024-001",
+    "environment": "dev",
+    "user_id": "ops-user"
+  },
+  "classification": {
+    "use_case": "U2",
+    "task_id": "CANCEL_ORDER",
+    "confidence": 0.9,
+    "service": "Order",
+    "environment": "dev"
+  },
+  "extracted_entities": {
+    "order_id": "2024",
+    "service": "Order",
+    "target_status": null
+  },
   "next_steps": {
+    "description": "Order cancellation request identified",
     "runbook": "knowledge/runbooks/cancel-order-runbook.md",
-    "typical_steps": [...]
+    "api_spec": "knowledge/api-specs/order-management-api.md",
+    "typical_steps": [
+      "Validate order exists and is cancellable",
+      "Check user permissions",
+      "Execute cancellation via API",
+      "Verify cancellation completed"
+    ]
   }
 }
 ```
 
-## License
 
-MIT License - See LICENSE file for details.

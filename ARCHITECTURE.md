@@ -27,10 +27,10 @@ Approval Workflow → Citation-Backed Response
 - **LLM Reasoning**: Contextual analysis with retrieved documentation for precise diagnosis
 - **Output**: Ranked hypotheses + citation-backed safe next actions
 
-**RAG Flow Example**: *"Lab person unable to sign out order (400 Bad Request)"*
-1. **Retrieval**: Vector search finds "Data divergence reconciliation runbook v3", downstream API specs
+**RAG Flow Example**: *"System unable to ship an order (400 Bad Request)"*
+1. **Retrieval**: Vector search finds "Shipping reconciliation runbook v3", downstream API specs
 2. **Augmentation**: Business rules applied (API-over-DB preference), risk assessment
-3. **Generation**: LLM reasons with context → "Data divergence detected. Execute reconciliation via `/v2/orders/{id}/reconcile` API per runbook v3"
+3. **Generation**: LLM reasons with context → "Shipping validation failed. Execute reconciliation via `/v2/orders/{id}/reconcile` API per runbook v3"
 
 ### 2. **🔧 Operational Ask → Safe Procedures**
 **Convert natural language requests into API-first procedures with LLM reasoning**
@@ -46,15 +46,15 @@ Approval Workflow → Citation-Backed Response
 
 ### 3. **📚 Business Query → System Explanation**
 **Transform questions into comprehensive system understanding through multi-source synthesis**
-- **Input**: Business questions ("How does pathologist signout work?")
+- **Input**: Business questions ("How does Payments and Charges work?")
 - **RAG Retrieval**: Vector search across design docs, PRDs, runbooks, code repositories
 - **LLM Reasoning**: Synthesize multi-source documentation into coherent explanations
 - **Output**: Comprehensive workflow explanations with source citations
 
-**RAG Flow Example**: *"How does pathologist signout flow work?"*
+**RAG Flow Example**: *"How does Payments and Charges work?"*
 1. **Retrieval**: Design docs, API specs, workflow diagrams, code comments
 2. **Augmentation**: Context enrichment with service dependencies, business rules
-3. **Generation**: LLM synthesizes → Complete workflow explanation with step-by-step process and system interactions
+3. **Generation**: LLM synthesizes → Complete payment workflow explanation with step-by-step process and system interactions
 
 ## 🏗️ Component Architecture
 
