@@ -207,6 +207,42 @@ This project demonstrates cost-effective operational intelligence. Contributions
 - AI integration improvements
 - Documentation enhancements
 
+## Quick Reference
+
+### Core Operations
+```bash
+# Health check
+curl http://localhost:8093/health
+
+# Cancel order
+curl -X POST http://localhost:8093/v1/request \
+  -H "Content-Type: application/json" \
+  -H "X-User-ID: ops-user" \
+  -H "Authorization: Bearer your-token" \
+  -d '{"query": "cancel order ORDER-2024-001", "environment": "dev"}'
+
+# Change order status  
+curl -X POST http://localhost:8093/v1/request \
+  -H "Content-Type: application/json" \
+  -H "X-User-ID: ops-user" \
+  -H "Authorization: Bearer your-token" \
+  -d '{"query": "change order status to completed for ORDER-456", "environment": "prod"}'
+```
+
+### Expected Response Format
+```json
+{
+  "task_id": "CANCEL_ORDER",
+  "confidence": 0.9,
+  "order_id": "2024",
+  "service": "Order",
+  "next_steps": {
+    "runbook": "knowledge/runbooks/cancel-order-runbook.md",
+    "typical_steps": [...]
+  }
+}
+```
+
 ## License
 
 MIT License - See LICENSE file for details.
