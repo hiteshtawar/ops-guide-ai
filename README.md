@@ -31,7 +31,7 @@ OpsGuide transforms operational chaos into intelligent automation:
 
 ## 🧠 **The Solution: RAG-Powered Operational Intelligence**
 
-A production-ready operational intelligence system that transforms operational challenges into actionable intelligence through **vector search, knowledge retrieval, and LLM reasoning** (when budget or security approvals permit). Built with a cost-conscious dual-mode architecture that delivers high accuracy through pattern matching, with complete RAG pipeline available for premium accuracy.
+A production-ready operational intelligence system that transforms operational challenges into actionable intelligence through **vector search, knowledge retrieval, and LLM reasoning** (when budget or security approvals permit). Built with a **cost-conscious dual-mode architecture** that lets you start with efficient pattern matching (zero cloud costs) and seamlessly upgrade to full cloud-integrated RAG when premium accuracy and contextual reasoning justify the investment.
 
 ## 🧠 **The RAG Advantage**
 
@@ -165,11 +165,11 @@ python server.py
 
 ## 🎯 **ROI Calculator**
 
-**For a 10-person engineering team**:
-- **Current cost**: 40% of time on operational toil = $400K/year
-- **With OpsGuide**: 75% reduction in incident time = $300K/year savings
-- **Investment**: $0 (Core system) to $50K/year (full RAG)
-- **Net ROI**: 600-800% in year one
+**For a typical engineering team**:
+- **Current cost**: 30% of time on operational toil = $Y/year
+- **With OpsGuide**: 75% reduction in incident time = $Y-X/year savings
+- **Investment**: $0 (Core system) to $X cloud service cost (full RAG)
+- **Net ROI**: X% in year one
 
 ## Quick Start
 
