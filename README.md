@@ -1,6 +1,6 @@
 # OpsGuide - RAG-Powered Operational Intelligence Platform
 
-A production-ready operational intelligence system that transforms operational challenges into actionable intelligence through **vector search, knowledge retrieval, and LLM reasoning** (when budget or security approvals permit). Built with a cost-conscious dual-mode architecture that delivers high accuracy through pattern matching, with complete RAG pipeline available for premium accuracy.
+A production-ready operational intelligence system that transforms operational challenges into actionable intelligence through **vector search, knowledge retrieval, and LLM reasoning** (when budget or security approvals permit). Built with a cost-conscious dual-mode architecture _(cost effective vs RAG enhanced)_ that delivers high accuracy through pattern matching, with complete RAG pipeline available for premium accuracy.
 
 ## 🧠 **The RAG Advantage**
 
