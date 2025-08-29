@@ -1,0 +1,2 @@
+pydantic==2.5.0
+# No AI/AWS dependencies - just basic HTTP server and data validation

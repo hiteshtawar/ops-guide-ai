@@ -1,0 +1,101 @@
+# Removed version as it's obsolete in newer Docker Compose
+
+services:
+  # LocalStack for AWS services simulation
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: opsguide-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=bedrock,opensearch,dynamodb,s3
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LOCALSTACK_HOST=localstack
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./localstack-data:/var/lib/localstack"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # OpenSearch for vector search (alternative to LocalStack OpenSearch)
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: opsguide-opensearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # OpsGuide Core Server (pattern matching)
+  opsguide-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: opsguide-core-server
+    ports:
+      - "8093:8093"
+    environment:
+      - PORT=8093
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8093/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./knowledge:/app/knowledge:ro
+
+  # OpsGuide AI-Enhanced Server (with AI components)
+  opsguide-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile.full
+    container_name: opsguide-ai-server
+    ports:
+      - "8094:8094"
+    environment:
+      - PORT=8094
+      - OPENSEARCH_ENDPOINT=http://opensearch:9200
+      - LOCALSTACK_ENDPOINT=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    depends_on:
+      localstack:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8094/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./knowledge:/app/knowledge:ro
+
+volumes:
+  opensearch-data:
+  localstack-data:
+
+networks:
+  default:
+    name: opsguide-network

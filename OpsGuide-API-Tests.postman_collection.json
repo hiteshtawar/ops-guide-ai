@@ -1,0 +1,822 @@
+{
+  "info": {
+    "name": "OpsGuide API Tests",
+    "description": "Complete test suite for OpsGuide operational intelligence platform. Tests both core pattern matching and AI-enhanced modes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url_core",
+      "value": "http://localhost:8093",
+      "type": "string",
+      "description": "Core system endpoint (pattern matching)"
+    },
+    {
+      "key": "base_url_ai",
+      "value": "http://localhost:8094",
+      "type": "string",
+      "description": "AI-enhanced system endpoint"
+    },
+    {
+      "key": "auth_token",
+      "value": "test-token",
+      "type": "string",
+      "description": "Authentication token for requests"
+    },
+    {
+      "key": "user_id",
+      "value": "test-user",
+      "type": "string",
+      "description": "User ID for testing"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Checks",
+      "description": "Verify system health and availability",
+      "item": [
+        {
+          "name": "Core System Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url_core}}/health",
+              "host": ["{{base_url_core}}"],
+              "path": ["health"]
+            },
+            "description": "Check if core system is running and healthy"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains status', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('status');",
+                  "    pm.expect(responseJson.status).to.eql('healthy');",
+                  "});",
+                  "",
+                  "pm.test('Service name is correct', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.service).to.include('opsguide');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "AI System Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url_ai}}/health",
+              "host": ["{{base_url_ai}}"],
+              "path": ["health"]
+            },
+            "description": "Check if AI-enhanced system is running and healthy"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains status', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('status');",
+                  "    pm.expect(responseJson.status).to.eql('healthy');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cancel Order Operations",
+      "description": "Test order cancellation functionality",
+      "item": [
+        {
+          "name": "Cancel Order - Basic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"cancel order ORDER-2024-001\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test basic order cancellation with specific order ID"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Task identified as CANCEL_ORDER', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CANCEL_ORDER');",
+                  "});",
+                  "",
+                  "pm.test('High confidence score', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.confidence).to.be.at.least(0.8);",
+                  "});",
+                  "",
+                  "pm.test('Order ID extracted', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.extracted_entities).to.have.property('order_id');",
+                  "});",
+                  "",
+                  "pm.test('Service identified as Order', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.service).to.eql('Order');",
+                  "});",
+                  "",
+                  "pm.test('Runbook reference provided', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.next_steps.runbook).to.include('cancel-order-runbook.md');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel Order - Natural Language",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"I need to cancel the order ORDER-2024-456\",\n  \"environment\": \"prod\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test natural language order cancellation request"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Task identified as CANCEL_ORDER', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CANCEL_ORDER');",
+                  "});",
+                  "",
+                  "pm.test('High confidence score', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.confidence).to.be.at.least(0.8);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel Order - Terminate Synonym",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"terminate order ORDER-789\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test order cancellation using terminate synonym"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Task identified as CANCEL_ORDER', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CANCEL_ORDER');",
+                  "});",
+                  "",
+                  "pm.test('High confidence score', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.confidence).to.be.at.least(0.8);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Change Order Status Operations",
+      "description": "Test order status change functionality",
+      "item": [
+        {
+          "name": "Change Order Status - Basic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"change order status to completed for ORDER-456\",\n  \"environment\": \"prod\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test basic order status change with target status"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Task identified as CHANGE_ORDER_STATUS', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CHANGE_ORDER_STATUS');",
+                  "});",
+                  "",
+                  "pm.test('High confidence score', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.confidence).to.be.at.least(0.8);",
+                  "});",
+                  "",
+                  "pm.test('Order ID extracted', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.extracted_entities).to.have.property('order_id');",
+                  "});",
+                  "",
+                  "pm.test('Target status extracted', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.extracted_entities.target_status).to.eql('completed');",
+                  "});",
+                  "",
+                  "pm.test('Runbook reference provided', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.next_steps.runbook).to.include('change-order-status-runbook.md');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Order Status - Update Variant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"update ORDER-2024-789 status to in_progress\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test order status change using update variant"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Task identified as CHANGE_ORDER_STATUS', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CHANGE_ORDER_STATUS');",
+                  "});",
+                  "",
+                  "pm.test('Target status extracted', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.extracted_entities.target_status).to.eql('in_progress');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Order Status - Set Variant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"set order ORDER-123 status to on_hold\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test order status change using set variant"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Task identified as CHANGE_ORDER_STATUS', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CHANGE_ORDER_STATUS');",
+                  "});",
+                  "",
+                  "pm.test('Target status extracted', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.extracted_entities.target_status).to.eql('on_hold');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Order Status - Move Variant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"move order ORDER-555 to pending status\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test order status change using move variant"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Task identified as CHANGE_ORDER_STATUS', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CHANGE_ORDER_STATUS');",
+                  "});",
+                  "",
+                  "pm.test('Target status extracted', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.extracted_entities.target_status).to.eql('pending');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Edge Cases & Error Handling",
+      "description": "Test system behavior with invalid or ambiguous requests",
+      "item": [
+        {
+          "name": "Invalid Request - Random Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"do something random\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test system behavior with unrecognized query"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('No task identified', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.be.null;",
+                  "});",
+                  "",
+                  "pm.test('Low confidence score', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.confidence).to.be.at.most(0.6);",
+                  "});",
+                  "",
+                  "pm.test('No next steps provided', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.next_steps).to.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Edge Case - Ambiguous Status Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mark ORDER-999 as resolved\",\n  \"environment\": \"prod\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test system behavior with unsupported pattern"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('No task identified or low confidence', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Edge Case - Check Status Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"check order status\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test system correctly rejects status check requests"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('No task identified', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.be.null;",
+                  "});",
+                  "",
+                  "pm.test('Low confidence score', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.confidence).to.be.at.most(0.6);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Environment & Context Tests",
+      "description": "Test environment detection and context handling",
+      "item": [
+        {
+          "name": "Development Environment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"cancel order ORDER-DEV-001\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test development environment handling"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Environment correctly identified', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.environment).to.eql('dev');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Production Environment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"change order status to completed for ORDER-PROD-789\",\n  \"environment\": \"prod\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test production environment handling"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Environment correctly identified', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.environment).to.eql('prod');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Performance & Load Tests",
+      "description": "Test system performance and response times",
+      "item": [
+        {
+          "name": "Response Time Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-ID",
+                "value": "{{user_id}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"cancel order ORDER-PERF-001\",\n  \"environment\": \"dev\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_core}}/v1/request",
+              "host": ["{{base_url_core}}"],
+              "path": ["v1", "request"]
+            },
+            "description": "Test system response time for pattern matching"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test('Task correctly identified', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.classification.task_id).to.eql('CANCEL_ORDER');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
