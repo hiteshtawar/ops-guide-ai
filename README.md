@@ -1,6 +1,78 @@
-# OpsGuide - Operational Intelligence Platform
+# OpsGuide - RAG-Powered Operational Intelligence Platform
 
-A production-ready operational intelligence system that transforms natural language requests into structured operational plans. Built with a cost-conscious architecture that delivers high accuracy through pattern matching, with optional AI enhancement when budget allows.
+A production-ready operational intelligence system that transforms operational challenges into actionable intelligence through **vector search, knowledge retrieval, and LLM reasoning** (when budget or security approvals permit). Built with a cost-conscious dual-mode architecture that delivers high accuracy through pattern matching, with complete RAG pipeline available for premium accuracy.
+
+## 🧠 **The RAG Advantage**
+
+OpsGuide transforms your static documentation into **dynamic, contextual incident response intelligence**:
+
+### **🔍 Retrieval Phase**
+- **Vector search** across runbooks, postmortems, design docs, API specs, previous incidents
+- **Intelligent chunking** of your organizational knowledge base
+- **Contextual retrieval** based on incident patterns and operational context
+
+### **🔗 Augmentation Phase** 
+- **Business rule application** (API-over-DB preference, safety guardrails)
+- **Risk assessment** with approval requirements
+- **Context enrichment** with service tags, environment metadata
+
+### **⚡ Generation Phase**
+- **LLM reasoning** with retrieved context for precise recommendations
+- **Citation-backed responses** grounded in your actual documentation
+- **Structured outputs** as ranked hypotheses, safe actions, rollback plans
+
+**Trust Factor**: Every suggestion is citation-backed and grounded in your organization's actual knowledge rather than hallucinated responses.
+
+## 🎯 **Three Core Use Cases**
+
+### **1. 🚨 Incident → Next Steps**
+**Transform alerts into safe actions**
+- **Input**: Alert payloads (ServiceNow/Datadog), log snippets, service errors
+- **RAG Process**: Vector search through runbooks, postmortems, API specs, previous incidents
+- **LLM Reasoning**: Contextual analysis with retrieved documentation
+- **Output**: Ranked hypotheses + citation-backed safe next actions
+
+**Example**: *"Lab person unable to sign out order (400 Bad Request)"*
+→ **RAG retrieves**: Data divergence reconciliation runbook v3, downstream API specs
+→ **LLM generates**: "Data divergence detected. Execute reconciliation via `/v2/orders/{id}/reconcile` API per runbook v3"
+
+### **2. 🔧 Operational Ask → Safe Procedures**
+**Convert natural language requests into API-first procedures**
+- **Input**: Natural language operational requests ("cancel order", "change status")
+- **RAG Process**: Retrieve specific API documentation, safety procedures, approval workflows
+- **LLM Reasoning**: Apply business rules (API-over-DB principle) with actual endpoint specifications
+- **Output**: Step-by-step procedures with safety checks and rollback plans
+
+**Example**: *"Business wants to cancel order fully"*
+→ **RAG retrieves**: Cancellation API documentation, business rules, approval matrix
+→ **LLM generates**: "Execute cancellation via `/v2/orders/{id}/cancel` with validation checks per policy v2.1"
+
+### **3. 📚 Business Query → System Explanation**
+**Transform questions into comprehensive system understanding**
+- **Input**: Business questions ("How does pathologist signout work?")
+- **RAG Process**: Vector search across design docs, PRDs, runbooks, code repositories
+- **LLM Reasoning**: Synthesize multi-source documentation into coherent explanations
+- **Output**: Comprehensive workflow explanations with source citations
+
+**Example**: *"How does pathologist signout flow work?"*
+→ **RAG retrieves**: Design docs, API specs, workflow diagrams, code comments
+→ **LLM generates**: Complete workflow explanation with step-by-step process and system interactions
+
+## 🏗️ **RAG Technology Stack**
+
+### **Knowledge Sources**
+- 📋 **Operational Runbooks** (160+ lines of procedures)
+- 📊 **API Specifications** (complete endpoint documentation)
+- 🔍 **Design Documents** (system architecture and workflows)
+- 📝 **Postmortem Analysis** (incident learnings and patterns)
+- 💻 **Code Repositories** (implementation details and comments)
+
+### **RAG Components**
+- **Vector Store**: OpenSearch with Bedrock Titan embeddings
+- **Knowledge Indexing**: Intelligent chunking and metadata enrichment
+- **Retrieval Engine**: Contextual similarity search with business rule filtering
+- **LLM Reasoning**: AWS Bedrock Claude 3 Sonnet for contextual generation
+- **Orchestration**: Risk assessment, approval workflows, safety guardrails
 
 ## 🚀 Core System (Pattern Matching)
 High-performance system with **90% accuracy** and **no AI costs**:
@@ -9,14 +81,15 @@ High-performance system with **90% accuracy** and **no AI costs**:
 - Structured data extraction from user queries
 - Complete operational runbooks and procedures
 
-## 🧠 AI-Enhanced Mode (When Budget Allows)
-Optional AI enhancement for complex scenarios requiring **premium accuracy**:
-- Vector knowledge retrieval (RAG with OpenSearch)
-- AI plan generation (Bedrock Claude)
-- Advanced risk assessment and policy validation
-- Dynamic approval workflow management
+## 🧠 RAG-Enhanced Mode (When Budget/Security Permits)
+Complete RAG pipeline for complex scenarios requiring **premium accuracy and contextual reasoning**:
+- **Vector knowledge retrieval** (OpenSearch + Bedrock Titan embeddings)
+- **LLM reasoning** (Bedrock Claude 3 Sonnet for contextual analysis)
+- **Citation-backed responses** grounded in your actual documentation
+- **Advanced risk assessment** and policy validation
+- **Dynamic approval workflow** management with business rule application
 
-**Cost Consideration**: AI components can add $0.01-$0.10 per request. Pattern matching delivers excellent results at zero marginal cost.
+**Cost Consideration**: Full RAG pipeline can add $0.01-$0.10 per request. Pattern matching delivers excellent results at zero marginal cost, with RAG available when premium accuracy and contextual reasoning justify the investment.
 
 ## Architecture
 
@@ -25,10 +98,11 @@ Optional AI enhancement for complex scenarios requiring **premium accuracy**:
 User Request → Parsing & Validation → Pattern Classification → Structured Response
 ```
 
-### AI-Enhanced Architecture (Premium)
+### RAG-Enhanced Architecture (Premium)
 ```
 User Request → Parsing & Validation → Pattern Classification → Vector Knowledge Search → 
-AI Plan Generation → Risk Assessment → Policy Validation → Approval Workflow → Response
+Knowledge Retrieval → LLM Reasoning → Risk Assessment → Policy Validation → 
+Approval Workflow → Citation-Backed Response
 ```
 
 ## Components
@@ -96,18 +170,20 @@ curl -X POST http://localhost:8094/v1/request \
 
 ## Performance Comparison
 
-| Metric | Core System | AI-Enhanced |
-|--------|-------------|-------------|
+| Metric | Core System | RAG-Enhanced |
+|--------|-------------|--------------|
 | **Response Time** | <100ms | 2-5 seconds |
 | **Accuracy** | 90% | 95%+ |
+| **Contextual Reasoning** | Pattern-based | LLM-powered |
+| **Knowledge Grounding** | Static runbooks | Dynamic retrieval + citations |
 | **Cost per Request** | $0.00 | $0.01-$0.10 |
 | **Setup Complexity** | Simple | Moderate |
-| **AI Dependencies** | None | AWS Bedrock |
+| **Dependencies** | Python only | AWS Bedrock + OpenSearch |
 
-## When to Use AI Enhancement
+## When to Use RAG Enhancement
 
-- **Core System**: Perfect for most operational tasks, high-volume usage, cost-sensitive environments
-- **AI Enhancement**: Complex scenarios requiring contextual understanding, regulatory compliance, or when accuracy is critical
+- **Core System**: Perfect for high-volume operations, cost-sensitive environments, well-defined patterns
+- **RAG Enhancement**: Complex incidents requiring contextual analysis, multi-source knowledge synthesis, when citation-backed responses are critical, regulatory compliance scenarios
 
 ## Quick Start
 
