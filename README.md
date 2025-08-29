@@ -1,14 +1,14 @@
 # OpsGuide - RAG-Powered Operational Intelligence Platform
 
-## 🚨 **The Problem Every Engineering Team Faces**
+## 🚨 **The Problem Most Engineering Team Faces**
 
 As engineers, we've all experienced these challenges:
 
-1. **Repetitive Incident Firefighting** - Being pulled into the same types of incidents repeatedly, manually executing the same troubleshooting steps, wishing there was institutional memory
+1. **Repetitive Incident Firefighting** - Being pulled into the similar types of incidents repeatedly, manually executing the same troubleshooting steps, wishing there was institutional memory
 2. **Knowledge Silos** - Wondering "What if I had complete domain knowledge at my fingertips?" instead of hunting through scattered runbooks, Slack threads, and tribal knowledge
 3. **Alert Fatigue** - Getting paged multiple times only to discover a simple API call would restore system stability, but finding the right procedure takes 30+ minutes
 
-**The Reality**: Many engineering teams (especially those managing production systems) spend 30-50% of their time on operational toil instead of building features.
+**The Reality**: Many engineering teams spend 30-50% of their time on operational toil vs building features.
 
 ## 💰 **Measured Business Impact**
 
