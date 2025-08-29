@@ -24,7 +24,7 @@ OpsGuide transforms operational chaos into intelligent automation:
 - **Reduced on-call burden** by 65% through better initial response
 - **Knowledge transfer acceleration** - new team members productive in days, not months
 
-### **Engineering Focus Shift**
+### **Engineering/Business Focus Shift**
 - **30% more time** available for feature development vs. operational toil
 - **Business copilot** - instant answers to "How does X work?" questions
 - **Go-to operational tool** - single source of truth for all operational knowledge
