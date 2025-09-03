@@ -5,7 +5,7 @@
 OpsGuide is a **RAG-powered operational intelligence system** that transforms operational challenges into actionable intelligence through **vector search, knowledge retrieval, and LLM reasoning** (when budget or security approvals permit). Built with a dual-mode architecture for cost-conscious deployment that delivers citation-backed responses grounded in your actual documentation.
 
 ## System Architecture
-Opsguide uses the same architectural pattern as ChatGpt when searching requires web page search
+**Opsguide** uses the same architectural pattern as ChatGpt when searching requires web page search
 
 **Retrieval**: When you ask ChatGPT a question that requires current or factual information (e.g., "What were the key highlights of the latest tech conference?"), it doesn't just rely on its pre-trained knowledge. It uses a built-in search tool (powered by Bing) to actively retrieve relevant and up-to-date information from the web.
 
@@ -15,7 +15,8 @@ Opsguide uses the same architectural pattern as ChatGpt when searching requires 
 
 While RAG systems like ChatGPT and Claude handle the retrieval and generation of content, a tool like Cursor AI goes a step further by also handling the execution.
 
-The two-part process:
+The two-part process for an Agent or Autonomous system:
+
 **Planning (The RAG Part)**: When you give Cursor a high-level command (e.g., "Build a full-stack user authentication system"), it doesn't immediately start writing code. First, it acts like a RAG system. It retrieves information from its own knowledge base, your codebase, and potentially external documentation. It uses this context to generate a detailed, step-by-step execution plan. This plan outlines which files to create, which functions to write, and how to connect everything.
 
 **Execution**: Once the plan is generated and, in many workflows, approved by the user, Cursor's "Agent" or "Executor" mode takes over. It uses the plan as its guide and actively carries out the tasks. This means it can:
