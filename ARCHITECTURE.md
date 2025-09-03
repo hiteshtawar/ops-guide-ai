@@ -6,19 +6,40 @@ OpsGuide is a **RAG-powered operational intelligence system** that transforms op
 
 ## System Architecture
 
-### Core Architecture (Cost-Effective)
+### Core Architecture sequence (Cost-Effective)
 ```
 HTTP Request → Parse & Validate → Pattern Classification → Entity Extraction → Structured Response
 ```
 
-### RAG-Enhanced Architecture (Premium)
+### RAG-Enhanced Architecture sequence(Premium)
 ```
 HTTP Request → Parse & Validate → Pattern Classification → Vector Knowledge Search → 
 Knowledge Retrieval → LLM Reasoning → Risk Assessment → Policy Validation → 
 Approval Workflow → Citation-Backed Response
 ```
+### Opsguide Architecture
+OpsGuide uses the same architectural pattern as ChatGpt when searching requires web page search
 
-## 🎯 Core Use Cases
+**Retrieval**: When you ask ChatGPT a question that requires current or factual information (e.g., "What were the key highlights of the latest tech conference?"), it doesn't just rely on its pre-trained knowledge. It uses a built-in search tool (powered by Bing) to actively retrieve relevant and up-to-date information from the web.
+
+**Augmentation**: The data it retrieves from the search results is then "augmented" or added to the prompt. This provides the model with new context and external facts.
+
+**Generation**: With this augmented context, the model then generates a response. Because it's "grounded" in the information from the web, the response is more accurate, less prone to hallucination, and includes citations to the original sources.
+
+While RAG systems like ChatGPT and Claude handle the retrieval and generation of content, a tool like Cursor AI goes a step further by also handling the execution.
+
+Thetwo-part process:
+**Planning (The RAG Part)**: When you give Cursor a high-level command (e.g., "Build a full-stack user authentication system"), it doesn't immediately start writing code. First, it acts like a RAG system. It retrieves information from its own knowledge base, your codebase, and potentially external documentation. It uses this context to generate a detailed, step-by-step execution plan. This plan outlines which files to create, which functions to write, and how to connect everything.
+
+**Execution**: Once the plan is generated and, in many workflows, approved by the user, Cursor's "Agent" or "Executor" mode takes over. It uses the plan as its guide and actively carries out the tasks. This means it can:
+- Create and modify files on your local machine.
+- Write code based on the plan.
+- Run terminal commands to install dependencies, run tests, or debug the code.
+- Commit changes to your Git repository.
+
+This is a form of agentic behavior, that Opsguide can be extended to to acheieve behavior of a full autonomous system.
+
+## 🎯 Core Use Cases and steps
 
 ### 1. **🚨 Incident → Next Steps**
 **Transform alerts into safe actions through complete RAG pipeline**
