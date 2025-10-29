@@ -173,7 +173,13 @@ python server.py
 
 ## Quick Start
 
-See [SETUP.md](./SETUP.md) for detailed installation instructions.
+See [SETUP_GUIDE.md](./SETUP_GUIDE.md) for demo instructions, or [SETUP.md](./SETUP.md) for detailed installation instructions.
+
+**For demo:**
+```bash
+./start-server.sh
+```
+Server starts on `http://localhost:8093`
 
 ```bash
 # Core system (zero AI costs)

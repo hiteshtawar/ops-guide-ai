@@ -20,6 +20,15 @@ class PatternClassifier:
                 r'\babort\b.*\border\b',
                 r'\bstop\b.*\border\b'
             ],
+            TaskId.CANCEL_CASE: [
+                r'\bcancel\b.*\bcase\b',
+                r'\bcase\b.*\bcancel\b',
+                r'\bterminate\b.*\bcase\b',
+                r'\babort\b.*\bcase\b',
+                r'\bstop\b.*\bcase\b',
+                r'\bclose\b.*\bcase\b',
+                r'\bcase\b.*\bclose\b'
+            ],
             TaskId.CHANGE_ORDER_STATUS: [
                 r'\bchange\b.*\bstatus\b',
                 r'\bstatus\b.*\bchange\b',
@@ -40,6 +49,7 @@ class PatternClassifier:
         # Service detection patterns
         self.service_patterns = {
             'Order': [r'\border\b', r'\borders\b', r'\border management\b'],
+            'Case': [r'\bcase\b', r'\bcases\b', r'\bcase management\b'],
             'Fulfillment': [r'\bfulfillment\b', r'\bshipping\b', r'\bdelivery\b'],
             'Billing': [r'\bbilling\b', r'\binvoice\b', r'\bpayment\b']
         }
@@ -59,8 +69,19 @@ class PatternClassifier:
         # Extract entities from the query
         environment = self._extract_environment(query_lower, request.environment)
         service = self._extract_service(query_lower)
-        order_id = self.entity_extractor.extract_order_id(request.query)
+        order_id = self.entity_extractor.extract_order_id(request.query) if 'order' in query_lower else None
+        case_id = self.entity_extractor.extract_case_id(request.query) if 'case' in query_lower else None
         target_status = self.entity_extractor.extract_target_status(request.query) if task_id == TaskId.CHANGE_ORDER_STATUS else None
+        
+        # Build extracted entities dict
+        extracted_entities = {
+            "service": service,
+            "target_status": target_status
+        }
+        if order_id:
+            extracted_entities["order_id"] = order_id
+        if case_id:
+            extracted_entities["case_id"] = case_id
         
         # Calculate confidence based on pattern matches
         confidence = 0.9 if task_id else 0.5
@@ -69,11 +90,7 @@ class PatternClassifier:
             use_case=use_case,
             task_id=task_id,
             confidence=confidence,
-            extracted_entities={
-                "order_id": order_id,
-                "service": service,
-                "target_status": target_status
-            },
+            extracted_entities=extracted_entities,
             environment=environment,
             service=service
         )
@@ -92,6 +109,10 @@ class PatternClassifier:
             elif any(word in query for word in ['status', 'state', 'transition']):
                 return TaskId.CHANGE_ORDER_STATUS
         
+        # Fallback logic - if contains "case" and cancel keywords
+        if 'case' in query and any(word in query for word in ['cancel', 'terminate', 'abort', 'stop', 'close']):
+            return TaskId.CANCEL_CASE
+        
         return None
 
     def _extract_environment(self, query: str, default_env: str) -> str:
@@ -108,4 +129,7 @@ class PatternClassifier:
             for pattern in patterns:
                 if re.search(pattern, query, re.IGNORECASE):
                     return service
+        # Default based on query content
+        if 'case' in query.lower():
+            return "Case"
         return "Order"  # Default to Order service

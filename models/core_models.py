@@ -24,6 +24,7 @@ class TaskId(str, Enum):
     """Known operational tasks for MVP"""
     CANCEL_ORDER = "CANCEL_ORDER"
     CHANGE_ORDER_STATUS = "CHANGE_ORDER_STATUS"
+    CANCEL_CASE = "CANCEL_CASE"
 
 
 class OperationalRequest(BaseModel):

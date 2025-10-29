@@ -25,6 +25,30 @@ class EntityExtractor:
         
         return None
     
+    def extract_case_id(self, query: str) -> Optional[str]:
+        """Extract case ID from query using regex patterns"""
+        # First try to match full case ID format (e.g., CASE-2024-TEST-001)
+        full_case_pattern = r'\bCASE[_-]\d{4}[_-][\w-]+\b'
+        full_match = re.search(full_case_pattern, query, re.IGNORECASE)
+        if full_match:
+            return full_match.group(0)
+        
+        # Try simpler patterns
+        patterns = [
+            r'\bCASE[_-]?([\w-]+)\b',      # CASE-12345 or CASE-TEST-001
+            r'\bcase[_\s-]?(\d+)\b',      # case-12345 -> 12345
+            r'\bcase[_\s-]?id[_\s-]?([\w-]+)\b',  # case id CASE-2024-TEST-001
+            r'\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b',  # UUID
+            r'\b(\d{4,})\b'  # Any 4+ digit number as fallback
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, query, re.IGNORECASE)
+            if match:
+                return match.group(1)
+        
+        return None
+    
     def extract_target_status(self, query: str) -> Optional[str]:
         """Extract target status for status change operations"""
         status_patterns = {

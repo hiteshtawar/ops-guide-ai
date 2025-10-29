@@ -34,6 +34,12 @@ class OpsGuideMVPHandler(BaseHTTPRequestHandler):
         else:
             self.send_error_response(404, "Endpoint not found")
     
+    def do_OPTIONS(self):
+        """Handle OPTIONS requests for CORS preflight"""
+        self.send_response(200)
+        self._set_cors_headers()
+        self.end_headers()
+    
     def do_GET(self):
         """Handle GET requests"""
         
@@ -43,6 +49,13 @@ class OpsGuideMVPHandler(BaseHTTPRequestHandler):
             self.handle_root()
         else:
             self.send_error_response(404, "Endpoint not found")
+    
+    def _set_cors_headers(self):
+        """Set CORS headers"""
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-User-ID, X-Idempotency-Key, Authorization')
+        self.send_header('Access-Control-Max-Age', '3600')
     
     def handle_root(self):
         """Handle GET / - show API info"""
@@ -55,8 +68,9 @@ class OpsGuideMVPHandler(BaseHTTPRequestHandler):
                 "GET /health": "Health check"
             },
             "supported_tasks": [
+                "CANCEL_ORDER: cancel order ORDER-123",
                 "CANCEL_CASE: cancel case CASE-123",
-                "CHANGE_CASE_STATUS: change case status to completed"
+                "CHANGE_ORDER_STATUS: change order status to completed"
             ],
             "architecture": [
                 "1. HTTP Parsing & Validation",
@@ -156,6 +170,18 @@ class OpsGuideMVPHandler(BaseHTTPRequestHandler):
                     "Verify cancellation completed"
                 ]
             }
+        elif task_id == TaskId.CANCEL_CASE:
+            return {
+                "description": "Case cancellation request identified",
+                "runbook": "knowledge/runbooks/cancel-case-runbook.md",
+                "api_spec": "knowledge/api-specs/order-management-api.md",
+                "typical_steps": [
+                    "Validate case exists and is cancellable",
+                    "Check user permissions",
+                    "Execute cancellation via API",
+                    "Verify cancellation completed"
+                ]
+            }
         elif task_id == TaskId.CHANGE_ORDER_STATUS:
             return {
                 "description": "Order status change request identified",
@@ -171,10 +197,10 @@ class OpsGuideMVPHandler(BaseHTTPRequestHandler):
         return None
     
     def send_json_response(self, status_code: int, data: dict):
-        """Send JSON response"""
+        """Send JSON response with CORS headers"""
         self.send_response(status_code)
         self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        self._set_cors_headers()
         self.end_headers()
         
         response_json = json.dumps(data, indent=2, default=str)
@@ -205,8 +231,9 @@ def run_server(port=8093):
     print("   3. Entity Extraction")
     print("   4. Structured Response")
     print("\n✅ Supported Tasks:")
+    print("   • CANCEL_ORDER: 'cancel order ORDER-123'")
     print("   • CANCEL_CASE: 'cancel case CASE-123'")
-    print("   • CHANGE_CASE_STATUS: 'change case status to completed'")
+    print("   • CHANGE_ORDER_STATUS: 'change order status to completed'")
     print(f"\n🌐 Server ready at http://localhost:{port}")
     
     try:

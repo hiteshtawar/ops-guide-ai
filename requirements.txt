@@ -1,2 +1,3 @@
-pydantic==2.5.0
+pydantic>=2.9.0
 # No AI/AWS dependencies - just basic HTTP server and data validation
+# Using pydantic 2.9.0+ for Python 3.13 compatibility
